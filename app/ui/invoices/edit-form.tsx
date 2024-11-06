@@ -20,7 +20,21 @@ export default function EditInvoiceForm({
   customers: CustomerField[];
 }) {
   const initialState: State = { message: null, errors: {} }
-  const updateInvoiceWithId = updateInvoice.bind(null, invoice.id)
+  const updateInvoiceWithId = async (state: State): Promise<State> => {
+    const formData = new FormData();
+    formData.append('customerId', invoice.customer_id);
+    formData.append('amount', invoice.amount.toString());
+    formData.append('status', invoice.status);
+  
+    // Call the updateInvoice function with formData and handle the response
+    const result = await updateInvoice(invoice.id, formData);
+    return ({
+      ...state,
+      message: result.message,
+      errors: result.errors,
+    });
+  };
+  
   const [state, formAction] = useActionState(updateInvoiceWithId, initialState)
   return (
     <form action={formAction}>
