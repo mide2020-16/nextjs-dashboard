@@ -61,23 +61,16 @@ export async function createInvoice(prevState: State, formData: FormData) {
     };
   }
 
-  const { customerId, amount, status } = validatedFields.data;
-  const amountInCents = amount * 100;
-  const date = new Date().toISOString().split('T')[0];
+    const { customerId, amount, status } = validatedFields.data;
+    const amountInCents = amount * 100;
+    const date = new Date().toISOString().split('T')[0];
 
-  try {
     await sql`
-      INSERT INTO invoices (customer_id, amount, status, date)
-      VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
+        INSERT INTO invoices (customer_id, amount, status, date)
+        VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
     `;
     revalidatePath('/dashboard/invoices');
     redirect('/dashboard/invoices');
-  } catch (error) {
-    console.error('Create Invoice Error:', error);
-    return {
-      message: 'Database Error: Failed to create Invoice.',
-    };
-  }
 }
 
 export async function updateInvoice(id: string, formData: FormData) {
@@ -98,7 +91,6 @@ export async function updateInvoice(id: string, formData: FormData) {
   const { customerId, amount, status } = validatedFields.data;
   const amountInCents = amount * 100;
 
-  try {
     await sql`
       UPDATE invoices
       SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
@@ -106,23 +98,10 @@ export async function updateInvoice(id: string, formData: FormData) {
     `;
     revalidatePath('/dashboard/invoices');
     redirect('/dashboard/invoices');
-  } catch (error) {
-    console.error('Update Invoice Error:', error);
-    return {
-      message: 'Database Error: Failed to Update Invoice.',
-    };
-  }
 }
 
 export async function deleteInvoice(id: string) {
-  try {
     await sql`DELETE FROM invoices WHERE id = ${id}`;
     revalidatePath('/dashboard/invoices');
     return { message: 'Deleted Invoice' };
-  } catch (error) {
-    console.error('Delete Invoice Error:', error);
-    return {
-      message: 'Database Error: Failed to Delete Invoice.',
-    };
-  }
 }
